@@ -25,8 +25,10 @@ class PostService
      */
     public function isOwner($user_id)
     {
+        $auth_id = Auth::id();
         $isOwner = false;
-        if ($user_id == Auth::id()) {
+
+        if ($auth_id && $user_id == $auth_id) {
             $isOwner = true;
         }
 
