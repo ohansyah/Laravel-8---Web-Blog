@@ -4,6 +4,11 @@
     <main role="main" class="container">
         <div class="jumbotron">
             <h1>{{ $post->title }}</h1>
+
+            <div class="">
+                <img style="" src="/storage/cover_images/{{ $post->image }}" alt="" class="rounded mx-auto d-block">
+            </div>
+
             {!! $post->body !!}
         </div>
     </main>

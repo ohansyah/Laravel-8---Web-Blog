@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\PostNotFoundException;
 use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Exceptions\PostNotFoundException;
-use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -55,16 +54,28 @@ class PostController extends Controller
             'title' => 'required',
             'body' => 'required',
             'category' => 'required',
+            'image' => 'image|nullable|max:4000',
         ]);
+
+        // handling file upload
+        $path = null;
+        if ($request->hasFile('image')) {
+            $file_name_with_ext = $request->file('image')->getClientOriginalName();
+            $file_name = pathinfo($file_name_with_ext, PATHINFO_FILENAME);
+            $file_ext = $request->file('image')->getClientOriginalExtension();
+            $file_name_to_store = $file_name . '_' . time() . '.' . $file_ext;
+            $path = $request->file('image')->storeAs('public/cover_images', $file_name_to_store);
+        }
 
         $post = new Post();
         $post->title = $request->input('title');
         $post->body = $request->input('body');
         $post->category = $request->input('category');
+        $post->image = $file_name_to_store;
         $post->user_id = Auth::id();
         $post->save();
 
-        return redirect('/posts')->with('success', 'Post Created');
+        return redirect('/dashboard')->with('success', 'Post Created');
     }
 
     /**
@@ -123,7 +134,7 @@ class PostController extends Controller
         $post->category = $request->input('category');
         $post->save();
 
-        return redirect('/posts')->with('success', 'Post Updated');
+        return redirect('/dashboard')->with('success', 'Post Updated');
     }
 
     /**
