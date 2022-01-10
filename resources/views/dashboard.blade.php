@@ -24,7 +24,7 @@
                         <div class="well">
                             <div
                                 class="row g-0 border rounded overflow-hidden flex-md-row mb-2 shadow-sm h-md-250 position-relative">
-                                <div class="col-xl-3 col-md-4 col-sm-5">
+                                <div class="col-xl-3 col-md-4">
                                     <img style="width: 100%" src="/storage/cover_images/{{ $post->image }}" alt=""
                                         class="img-thumbnail"
                                         onerror="this.onerror=null;this.src='{{ Config::get('const_vars.no_image') }}';">

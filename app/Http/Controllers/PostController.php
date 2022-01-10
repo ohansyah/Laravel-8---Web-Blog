@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -129,9 +130,24 @@ class PostController extends Controller
             return back()->withError($exception->getMessage())->withInput();
         }
 
+        // handling file upload
+        $path = null;
+        $hasFile = $request->hasFile('image');
+        if ($hasFile) {
+            $file_name_with_ext = $request->file('image')->getClientOriginalName();
+            $file_name = pathinfo($file_name_with_ext, PATHINFO_FILENAME);
+            $file_ext = $request->file('image')->getClientOriginalExtension();
+            $file_name_to_store = $file_name . '_' . time() . '.' . $file_ext;
+            $path = $request->file('image')->storeAs('public/cover_images', $file_name_to_store);
+        }
+
         $post->title = $request->input('title');
         $post->body = $request->input('body');
         $post->category = $request->input('category');
+        if ($hasFile) {
+            $post->image = $file_name_to_store;
+        }
+
         $post->save();
 
         return redirect('/dashboard')->with('success', 'Post Updated');
@@ -149,6 +165,10 @@ class PostController extends Controller
             $post = $this->postService->validateUserPost($id);
         } catch (PostNotFoundException $exception) {
             return back()->withError($exception->getMessage())->withInput();
+        }
+
+        if($post->image){
+            Storage::delete('public/cover_images/'.$post->image);
         }
 
         $post->delete();

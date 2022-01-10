@@ -15,5 +15,6 @@
 @if (session('error'))
     <div class=" alert alert-danger">
         {{ session('error') }}
+        {{ Session::forget('error') }}
     </div>
 @endif
